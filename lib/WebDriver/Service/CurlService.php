@@ -41,9 +41,20 @@ class CurlService implements CurlServiceInterface
             'Content-Type: application/json;charset=UTF-8',
             'Accept: application/json;charset=UTF-8',
         );
-
-        $curl = curl_init($url);
+        $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $matches = null;
+        if (preg_match("/^(.*):(.*)@(.*?)/U", $url, $matches)) {
+          $url = $matches[3];
+          $auth_creds = $matches[1].":".$matches[2];
+          curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+          curl_setopt($curl, CURLOPT_USERPWD, $auth_creds);
+        }
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, /* CURLOPT_CONNECTTIMEOUT_MS */ 156, 30000);
+        curl_setopt($curl, /* CURLOPT_CONNECTTIMEOUT_MS */ 156, 30000);
 
         switch ($requestMethod) {
             case 'GET':
